@@ -2,6 +2,7 @@
 
 - create react app
 - configured tailwincss
+- header
 
 # Features
 
