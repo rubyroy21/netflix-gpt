@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/utils/constant.js
 /.pnp
 .pnp.js
 
