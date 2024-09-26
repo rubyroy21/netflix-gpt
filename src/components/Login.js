@@ -7,14 +7,16 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../utils/firebaseSetup.js";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice.js";
+import PasswordVisible from "../utils/icons/PasswordVisible.js";
+import PasswordNotVisible from "../utils/icons/PasswordNotVisible.js";
+import { USER_AVATAR } from "../utils/constant.js";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const email = useRef(null);
   const name = useRef(null);
@@ -39,8 +41,7 @@ const Login = () => {
           // Update profile
           updateProfile(user, {
             displayName: name.current.value,
-            photoURL:
-              "https://static.vecteezy.com/system/resources/previews/048/896/064/original/nezuko-kamado-demon-slayer-free-png.png",
+            photoURL: USER_AVATAR,
           })
             .then(() => {
               // Fetch updated user details from Firebase and dispatch them to Redux
@@ -53,7 +54,6 @@ const Login = () => {
                   photoURL: photoURL,
                 })
               );
-              navigate("/browse");
             })
             .catch((error) => {
               setErrorMessage(error.message);
@@ -74,8 +74,6 @@ const Login = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          console.log(user, "login");
-          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -87,6 +85,10 @@ const Login = () => {
 
   const toggleSignInForm = () => {
     setIsSignInForm(!isSignInForm);
+  };
+
+  const handleVisiblePassword = () => {
+    setPasswordVisible((prev) => !prev);
   };
 
   return (
@@ -111,7 +113,7 @@ const Login = () => {
             ref={name}
             type="text"
             placeholder="Full Name"
-            className="p-4 my-4 w-full bg-gray-700"
+            className="p-4 my-4 w-full bg-gray-700 text-white rounded-lg"
           />
         )}
 
@@ -119,14 +121,20 @@ const Login = () => {
           ref={email}
           type="text"
           placeholder="Email Address"
-          className="p-4 my-4 w-full bg-gray-700"
+          className="p-4 my-4 w-full bg-gray-700 text-white rounded-lg"
         />
-        <input
-          ref={password}
-          type="password"
-          placeholder="Password"
-          className="p-4 my-4 w-full bg-gray-700"
-        />
+        <div className="flex items-center space-x-2">
+          <input
+            ref={password}
+            type={passwordVisible ? "text" : "password"}
+            placeholder="Password"
+            className="p-4 my-4 w-full bg-gray-700 text-white rounded-lg"
+          />
+          <div className="cursor-pointer" onClick={handleVisiblePassword}>
+            {passwordVisible ? <PasswordVisible /> : <PasswordNotVisible />}
+          </div>
+        </div>
+
         <p className="text-red-500 font-bold text-sm py-1">{errorMessage}</p>
 
         <button
